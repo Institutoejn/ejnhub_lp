@@ -16,6 +16,8 @@ concurrency:
 
 jobs:
   deploy:
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -34,3 +36,23 @@ jobs:
           path: _site
       - id: deployment
         uses: actions/deploy-pages@v4
+
+  verify:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Conferir a página publicada
+        env:
+          PAGE_URL: ${{ needs.deploy.outputs.page_url }}
+        run: |
+          set -euo pipefail
+          site_url="${PAGE_URL%/}"
+          curl --fail --silent --show-error --location --retry 12 --retry-delay 5 --retry-all-errors "$site_url/" -o /tmp/ejnhub-page.html
+          python3 - <<'PYTEST'
+          from pathlib import Path
+          page = Path('/tmp/ejnhub-page.html').read_text()
+          assert '<title>EJNHUB — Gestão que acompanha a transformação</title>' in page
+          PYTEST
+          for asset in styles.css main.js assets/ejn-logo.png; do
+            curl --fail --silent --show-error --location --retry 6 --retry-delay 5 --retry-all-errors "$site_url/$asset" -o /dev/null
+          done
