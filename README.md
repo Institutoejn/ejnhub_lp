@@ -21,3 +21,7 @@ Abra `http://localhost:4173`. Não há dependências de instalação nem etapa d
 ## Publicação
 
 Um push na branch `main` executa `.github/workflows/pages.yml`, que envia os arquivos estáticos ao GitHub Pages. O endereço esperado após a ativação do Pages é `https://institutoejn.github.io/ejnhub_lp/`. Os caminhos de CSS, JavaScript e imagens são relativos ao diretório do projeto.
+
+### Ativação inicial do GitHub Pages
+
+O repositório precisa ter o Pages habilitado uma vez em **Settings → Pages → Build and deployment → Source: GitHub Actions**. Depois, reexecute o workflow **Publicar EJNHUB LP no GitHub Pages** em **Actions**. O token padrão de Actions não habilita Pages automaticamente; a configuração inicial exige essa ação de quem administra o repositório.
